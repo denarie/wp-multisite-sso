@@ -58,11 +58,15 @@ class WP_MultiSite_SSO {
 
 		// assign domain to site associated by blog id
 		foreach( $sites as $site ) {
-			$site = is_object( $site ) ? get_object_vars( $site ) : $site;
-			if ( !isset( $site['blog_id'] ) || !isset( $site['domain'] ) )
+                        // depending on the existing function use different methods to get the value
+			$blog_id = function_exists('get_sites') ? get_object_vars($site)["blog_id"] : $site["blog_id"];
+			$domain  = function_exists('get_sites') ? get_object_vars($site)["domain"]  : $site["domain"];
+			$path    = function_exists('get_sites') ? get_object_vars($site)["path"]    : $site["path"];
+
+			if ( !isset( $blog_id ) || !isset( $domain ) )
 				continue;
 
-			$network_sites[$site['blog_id']] = esc_url( $site['domain'] );
+			$network_sites[ $blog_id ] = esc_url( $domain . $path );
 		}
 
 		// if domain mapping exists, attempt to map the sites to the mapped domain
